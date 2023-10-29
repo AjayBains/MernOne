@@ -1,5 +1,8 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { errorHandler } from "../utils/error.js";
+
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
   console.log("password*******", password);
@@ -13,6 +16,29 @@ export const signup = async (req, res, next) => {
   } catch (error) {
     console.log("Error***********", error);
     // res.status(500).json(error.message);
+    next(error);
+  }
+};
+
+export const signin = async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      return next(errorHandler(404, "User not found"));
+    }
+    const validPAssword = bcryptjs.compareSync(password, validUser.password);
+    if (!validPAssword) return next(errorHandler(401, "Invalid PAssword"));
+    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    const { password: pass, ...rest } = validUser._doc;
+    res
+      .cookie("access token", token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 24 * 60 * 60),
+      })
+      .status(200)
+      .json(validUser);
+  } catch (error) {
     next(error);
   }
 };
