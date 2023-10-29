@@ -34,7 +34,7 @@ export const signin = async (req, res, next) => {
     res
       .cookie("access token", token, {
         httpOnly: true,
-        expires: new Date(Date.now() + 24 * 60 * 60),
+        // expires: new Date(Date.now() + 24 * 60 * 60),
       })
       .status(200)
       .json(validUser);
