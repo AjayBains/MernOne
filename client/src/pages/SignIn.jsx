@@ -1,10 +1,18 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -16,25 +24,32 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    const res = await fetch("/api/auth/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await res.json();
+    try {
+      // setLoading(true);
+      dispatch(signInStart());
 
-    if (data?.success === false) {
-      setError(data.message);
-      setLoading(false);
-      return;
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+
+      if (data?.success === false) {
+        // setError(data.message);
+        // setLoading(false);
+        dispatch(signInFailure(data.message));
+        return;
+      }
+      // setLoading(false);
+      // setError(null);
+      dispatch(signInSuccess(data));
+      navigate("/");
+    } catch (error) {
+      dispatch(signInFailure(error.message));
     }
-    setLoading(false);
-    setError(null);
-    navigate("/");
-    console.log("dATARESPONSE", data);
   };
   console.log("formData", formData);
   return (
