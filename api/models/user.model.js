@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      default:
+        "https://unsplash.com/photos/man-standing-near-white-wall-d1UPkiFd04A",
+    },
   },
   { timestamps: true }
 );
