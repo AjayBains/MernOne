@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default:
-        "https://unsplash.com/photos/man-standing-near-white-wall-d1UPkiFd04A",
+        "https://unsplash.com/photos/man-wearing-white-v-neck-shirt-iFgRcqHznqg",
     },
   },
   { timestamps: true }
